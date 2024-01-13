@@ -5,10 +5,10 @@ import random
 
 GROUND_BASE = 190
 
-BULLET_SIZE = 4
+BULLET_SIZE = [3, 4, 7]
 # BULLET_HEIGHT = 2
-BULLET_COLOR = 11
-BULLET_SPEED = 4
+BULLET_COLOR = [6, 11, 14]
+BULLET_SPEED = [2, 3, 4]
 
 PLAYER_SPEED = 3
 
@@ -36,15 +36,6 @@ class App:
     def draw(self):
         pyxel.cls(0)
         self.draw_field()
-        pyxel.blt(
-            self.player.x,
-            self.player.y,
-            self.player.img,
-            self.player.u,
-            self.player.v,
-            self.player.w,
-            self.player.h,
-            self.player.colkey)
         
         for bullet in bullets:
             if bullet.is_alive:
@@ -59,6 +50,16 @@ class App:
                 particle.draw()
             else:
                 particles.remove(particle)
+
+        pyxel.blt(
+            self.player.x,
+            self.player.y,
+            self.player.img,
+            self.player.u,
+            self.player.v,
+            self.player.w,
+            self.player.h,
+            self.player.colkey)
 
 
     def draw_field(self):
@@ -90,6 +91,7 @@ class Player:
         self.direction = direction
         self.vy = vy
         self.direction_count = 0
+        self.begin_pressing = -1
 
     def update(self):
         direction_mapping = {
@@ -105,10 +107,21 @@ class Player:
             else:
                 self.apply_gravity()
 
-        if pyxel.btnp(pyxel.KEY_SPACE):
+        bullet_level = int((pyxel.frame_count - self.begin_pressing)/10)
+        if bullet_level > 2:
+            bullet_level = 2
+        if pyxel.btn(pyxel.KEY_SPACE):
             print("space")
-            Bullet(self.x, self.y, self.direction)
+            if self.begin_pressing < 0:
+                self.begin_pressing = pyxel.frame_count
 
+            Particle(self.x + self.w/2, self.y + self.h/2, BULLET_COLOR[bullet_level], 5, 3, 3) 
+        else:
+            if self.begin_pressing > 0:
+                Bullet(self.x + self.w/2, self.y + self.h/2, self.direction, bullet_level)
+                self.begin_pressing = -1
+
+            
     def apply_gravity(self):
         self.vy += self.GRAVITY
         self.y += self.vy
@@ -155,40 +168,46 @@ class MusicPlayer:
         pygame.mixer.music.stop()
 
 class Bullet:
-    def __init__(self, x, y, direction):
+    def __init__(self, x, y, direction, level):
         self.x = x
         self.y = y
+        self.level = level
         self.direction = direction
         self.is_alive = True
         bullets.append(self)
 
     def update(self):
         if self.direction == Direction.LEFT:
-            dx = -BULLET_SPEED
+            dx = -BULLET_SPEED[self.level]
         elif self.direction == Direction.RIGHT:
-            dx = BULLET_SPEED
+            dx = BULLET_SPEED[self.level]
+        else:
+            dx = 0
 
         self.x += dx
         if self.x < 0 or self.x > 320:
             self.is_alive = False
         if pyxel.frame_count % 2 == 0:
-            Particle(self.x - 3*dx, self.y)
+            Particle(self.x - 3*dx, self.y, None, 2)
             
             
     def draw(self):
         # pyxel.rect(self.x, self.y, BULLET_WIDTH, BULLET_HEIGHT, BULLET_COLOR)
-        pyxel.circ(self.x, self.y, BULLET_SIZE, BULLET_COLOR)
-        pyxel.circ(self.x, self.y, int(BULLET_SIZE/2), 7)
+        pyxel.circ(self.x, self.y, BULLET_SIZE[self.level], BULLET_COLOR[self.level])
+        pyxel.circ(self.x, self.y, int(BULLET_SIZE[self.level]/2), 7)
 
 class Particle:
-    def __init__(self, x, y):
+    def __init__(self, x, y, col = None, max_size = 2, diffusion = 1.2, size = 2):
         self.x = x
         self.y = y
-        self.dx = random.uniform(-1.2, 1.2)
-        self.dy = random.uniform(-1.2, 1.2)
-        self.size = int(random.uniform(1, 3))
+        self.dx = diffusion * random.uniform(-1, 1)
+        self.dy = diffusion * random.uniform(-1, 1)
+        self.size = int(random.uniform(size-1, size+3))
+        self.max_size = max_size
         self.dsize = random.uniform(-0.2, 0.2)
-        self.col = int(random.uniform(1, 16))
+        self.col = col
+        if self.col == None:
+            self.col = int(random.uniform(1, 16))
         self.born = pyxel.frame_count
         self.lifespan = int(random.uniform(5, 12))
         self.is_alive = True
@@ -202,8 +221,8 @@ class Particle:
             self.is_alive = False
         elif int(self.size) < 0:
             self.is_alive = False
-        elif int(self.size) > 2:
-            self.size = 2
+        elif int(self.size) > self.max_size:
+            self.size = self.max_size
             self.dsize = 0
 
     def draw(self):
