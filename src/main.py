@@ -11,6 +11,6 @@ class App:
 
     def draw(self):
         pyxel.cls(0)
-        pyxel.images[0].blt(50, 50, 0, 32, 32, 160, 120)
+        pyxel.blt(0, 0, 0, 0, 0, 120, 120, 2)
 
 App()
