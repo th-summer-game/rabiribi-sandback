@@ -59,35 +59,32 @@ class Player:
         self.direction_count = 0
 
     def update(self):
-        # w,a,s,d でキャラクターを動かす
-        if pyxel.btn(pyxel.KEY_W):
-            if self.direction != Direction.UP:
-                self.direction = Direction.UP
-                self.direction_count = 0
+        direction_mapping = {
+            pyxel.KEY_W: Direction.UP,
+            pyxel.KEY_A: Direction.LEFT,
+            pyxel.KEY_S: Direction.DOWN,
+            pyxel.KEY_D: Direction.RIGHT
+        }
+
+        for key, direction in direction_mapping.items():
+            if pyxel.btn(key):
+                self.move(direction)
+
+    def move(self, direction):
+        if self.direction != direction:
+            self.direction = direction
+            self.direction_count = 0
+        if direction == Direction.UP:
             self.y -= 1
-            self.direction_count += 1
-            self.u, self.v = 32 * (self.direction_count % 3), Direction.UP.value * 32
-        if pyxel.btn(pyxel.KEY_A):
-            if self.direction != Direction.LEFT:
-                self.direction = Direction.LEFT
-                self.direction_count = 0
+        elif direction == Direction.LEFT:
             self.x -= 1
-            self.direction_count += 1
-            self.u, self.v = 32 * (self.direction_count % 3), Direction.LEFT.value * 32
-        if pyxel.btn(pyxel.KEY_S):
-            if self.direction != Direction.DOWN:
-                self.direction = Direction.DOWN
-                self.direction_count = 0
+        elif direction == Direction.DOWN:
             self.y += 1
-            self.direction_count += 1
-            self.u, self.v = 32 * (self.direction_count % 3), Direction.DOWN.value * 32
-        if pyxel.btn(pyxel.KEY_D):
-            if self.direction != Direction.RIGHT:
-                self.direction = Direction.RIGHT
-                self.direction_count = 0
+        elif direction == Direction.RIGHT:
             self.x += 1
-            self.direction_count += 1
-            self.u, self.v = 32 * (self.direction_count % 3), Direction.RIGHT.value * 32
+
+        self.direction_count += 1
+        self.u, self.v = 32 * (self.direction_count % 3), direction.value * 32
 
     def draw(self):
         pyxel.blt(self.x, self.y, self.img, self.u, self.v, self.w, self.h, self.colkey)
