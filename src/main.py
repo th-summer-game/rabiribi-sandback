@@ -1,5 +1,6 @@
 import pyxel
 from enum import Enum
+import pygame
 
 class App:
     WIDTH = 320
@@ -10,10 +11,12 @@ class App:
         pyxel.images[0].load(0, 0, "assets/pipo-xmaschara03.png")
         pyxel.images[1].load(0, 0, "assets/map.png")
         self.player = Player(0, 0, 0, 64, 64, 32, 32, 11, Direction.RIGHT)
+        self.music_player = MusicPlayer('assets/music.mp3')
         pyxel.run(self.update, self.draw)
 
     def update(self):
         self.player.update()
+        self.music_player.loop(time=0.0)
         pass
 
     def draw(self):
@@ -88,5 +91,21 @@ class Player:
 
     def draw(self):
         pyxel.blt(self.x, self.y, self.img, self.u, self.v, self.w, self.h, self.colkey)
+
+class MusicPlayer:
+    def __init__(self,filename):
+        pygame.mixer.init()
+        pygame.mixer.music.load(filename)
+
+    def loop(self,time=0.0):
+        pos = pygame.mixer.music.get_pos()
+        if int(pos) == -1:
+            pygame.mixer.music.play(-1,time)
+
+    def start(self, count=1):
+        pygame.mixer.music.play(count)
+
+    def stop(self):
+        pygame.mixer.music.stop()
 
 App()
