@@ -1,6 +1,6 @@
 # rabiribi-sandback
 
-UPRPRC の会員である白木と UPRPRC 会員でない辻が作る
+UPRPRC の会員でない白木と UPRPRC 会員である辻が作る
 
 # Setup
 
