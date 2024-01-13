@@ -9,6 +9,8 @@ BULLET_HEIGHT = 2
 BULLET_COLOR = 11
 BULLET_SPEED = 4
 
+PLAYER_SPEED = 3
+
 bullets = []
 
 class App:
@@ -113,11 +115,11 @@ class Player:
                 self.vy = -10 * self.JUMP
             # self.y -= 1
         elif direction == Direction.LEFT:
-            self.x -= 1
+            self.x -= PLAYER_SPEED
         # elif direction == Direction.DOWN:
         #     self.y += 1
         elif direction == Direction.RIGHT:
-            self.x += 1
+            self.x += PLAYER_SPEED
 
         self.direction_count += 1
         self.u, self.v = 32 * (self.direction_count % 3), direction.value * 32
