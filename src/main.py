@@ -1,13 +1,16 @@
 import pyxel
 
-pyxel.init(160, 120)
+class App:
+    def __init__(self):
+        pyxel.init(160, 120, title="Pyxel Display PNG")
+        pyxel.images[0].load(0, 0, "assets/pipo-xmaschara03.png")
+        pyxel.run(self.update, self.draw)
 
-def update():
-    if pyxel.btnp(pyxel.KEY_Q):
-        pyxel.quit()
+    def update(self):
+        pass
 
-def draw():
-    pyxel.cls(0)
-    pyxel.rect(10, 10, 20, 20, 11)
+    def draw(self):
+        pyxel.cls(0)
+        pyxel.blt(0, 0, 0, 0, 0, 120, 120, 2)
 
-pyxel.run(update, draw)
+App()
