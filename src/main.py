@@ -54,6 +54,12 @@ class App:
             else:
                 particles.remove(particle)
 
+        for bullet in bullets:
+            # otaku との当たり判定
+            if bullet.x > self.otaku.x and bullet.x < self.otaku.x + self.otaku.w and bullet.y > self.otaku.y and bullet.y < self.otaku.y + self.otaku.h:
+                bullet.is_alive = False
+                break
+
         pyxel.blt(
             self.otaku.x,
             self.otaku.y,
