@@ -23,13 +23,16 @@ class App:
         pyxel.init(self.WIDTH, self.HEIGHT, title="Pyxel Display PNG")
         pyxel.images[0].load(0, 0, "assets/pipo-xmaschara03.png")
         pyxel.images[1].load(0, 0, "assets/map.png")
+        pyxel.images[2].load(0, 0, "assets/pipo-charachip_otaku01.png")
         self.player = Player(0, GROUND_BASE, 0, 64, 64, 32, 32, 11, Direction.RIGHT, 0)
+        self.otaku = Otaku(100, GROUND_BASE, 2, 64, 64, 32, 32, 11)
         self.music_player = MusicPlayer('assets/music.mp3')
         random.seed()
         pyxel.run(self.update, self.draw)
 
     def update(self):
         self.player.update()
+        self.otaku.update()
         # self.music_player.loop(time=0.0)
         pass
 
@@ -50,6 +53,16 @@ class App:
                 particle.draw()
             else:
                 particles.remove(particle)
+
+        pyxel.blt(
+            self.otaku.x,
+            self.otaku.y,
+            self.otaku.img,
+            self.otaku.u,
+            self.otaku.v,
+            self.otaku.w,
+            self.otaku.h,
+            self.otaku.colkey)
 
         pyxel.blt(
             self.player.x,
@@ -227,5 +240,22 @@ class Particle:
 
     def draw(self):
         pyxel.rect(self.x, self.y, self.size, self.size, self.col)
+
+class Otaku:
+    def __init__(self, x, y, img, u, v, w, h, colkey):
+        self.x = x
+        self.y = y
+        self.img = img
+        self.u = u
+        self.v = v
+        self.w = w
+        self.h = h
+        self.colkey = colkey
+
+    def update(self):
+        pass
+
+    def draw(self):
+        pass
 
 App()
