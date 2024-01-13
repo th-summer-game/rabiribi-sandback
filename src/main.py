@@ -4,6 +4,13 @@ import pygame
 
 GROUND_BASE = 190
 
+BULLET_WIDTH = 8
+BULLET_HEIGHT = 2
+BULLET_COLOR = 11
+BULLET_SPEED = 4
+
+bullets = []
+
 class App:
     WIDTH = 320
     HEIGHT = 240
@@ -18,7 +25,7 @@ class App:
 
     def update(self):
         self.player.update()
-        self.music_player.loop(time=0.0)
+        # self.music_player.loop(time=0.0)
         pass
 
     def draw(self):
@@ -33,6 +40,13 @@ class App:
             self.player.w,
             self.player.h,
             self.player.colkey)
+        
+        for bullet in bullets:
+            if bullet.is_alive:
+                bullet.update()
+                bullet.draw()
+            else:
+                bullets.remove(bullet)
 
     def draw_field(self):
         pyxel.rect(0, 0, self.WIDTH, self.HEIGHT-16, 12)
@@ -78,6 +92,10 @@ class Player:
             else:
                 self.apply_gravity()
 
+        if pyxel.btnp(pyxel.KEY_SPACE):
+            print("space")
+            Bullet(self.x, self.y, self.direction)
+
     def apply_gravity(self):
         self.vy += self.GRAVITY
         self.y += self.vy
@@ -122,5 +140,24 @@ class MusicPlayer:
 
     def stop(self):
         pygame.mixer.music.stop()
+
+class Bullet:
+    def __init__(self, x, y, direction):
+        self.x = x
+        self.y = y
+        self.direction = direction
+        self.is_alive = True
+        bullets.append(self)
+
+    def update(self):
+        if self.direction == Direction.LEFT:
+            self.x -= BULLET_SPEED
+        elif self.direction == Direction.RIGHT:
+            self.x += BULLET_SPEED
+        if self.x < 0 or self.x > 320:
+            self.is_alive = False
+
+    def draw(self):
+        pyxel.rect(self.x, self.y, BULLET_WIDTH, BULLET_HEIGHT, BULLET_COLOR)
 
 App()
