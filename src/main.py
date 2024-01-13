@@ -2,6 +2,8 @@ import pyxel
 from enum import Enum
 import pygame
 
+GROUND_BASE = 190
+
 class App:
     WIDTH = 320
     HEIGHT = 240
@@ -10,7 +12,7 @@ class App:
         pyxel.init(self.WIDTH, self.HEIGHT, title="Pyxel Display PNG")
         pyxel.images[0].load(0, 0, "assets/pipo-xmaschara03.png")
         pyxel.images[1].load(0, 0, "assets/map.png")
-        self.player = Player(0, 0, 0, 64, 64, 32, 32, 11, Direction.RIGHT)
+        self.player = Player(0, GROUND_BASE, 0, 64, 64, 32, 32, 11, Direction.RIGHT, 0)
         self.music_player = MusicPlayer('assets/music.mp3')
         pyxel.run(self.update, self.draw)
 
@@ -46,7 +48,10 @@ class Direction(Enum):
     UP = 3
 
 class Player:
-    def __init__(self, x, y, img, u, v, w, h, colkey, direction):
+    JUMP = 1
+    GRAVITY = 1
+
+    def __init__(self, x, y, img, u, v, w, h, colkey, direction, vy):
         self.x = x
         self.y = y
         self.img = img
@@ -56,6 +61,7 @@ class Player:
         self.h = h
         self.colkey = colkey
         self.direction = direction
+        self.vy = vy
         self.direction_count = 0
 
     def update(self):
@@ -69,17 +75,29 @@ class Player:
         for key, direction in direction_mapping.items():
             if pyxel.btn(key):
                 self.move(direction)
+            else:
+                self.apply_gravity()
+
+    def apply_gravity(self):
+        self.vy += self.GRAVITY
+        self.y += self.vy
+        if GROUND_BASE < self.y:
+            self.y = GROUND_BASE
 
     def move(self, direction):
+        self.apply_gravity()
+
         if self.direction != direction:
             self.direction = direction
             self.direction_count = 0
         if direction == Direction.UP:
-            self.y -= 1
+            if self.y == GROUND_BASE:
+                self.vy = -10 * self.JUMP
+            # self.y -= 1
         elif direction == Direction.LEFT:
             self.x -= 1
-        elif direction == Direction.DOWN:
-            self.y += 1
+        # elif direction == Direction.DOWN:
+        #     self.y += 1
         elif direction == Direction.RIGHT:
             self.x += 1
 
