@@ -1,6 +1,6 @@
 import pyxel
 from enum import Enum
-import pygame
+# import pygame
 import random
 
 GROUND_BASE = 190
@@ -26,7 +26,7 @@ class App:
         pyxel.images[2].load(0, 0, "assets/pipo-charachip_otaku01.png")
         self.player = Player(0, GROUND_BASE, 0, 64, 64, 32, 32, 11, Direction.RIGHT, 0)
         self.otaku = Otaku(100, GROUND_BASE, 2, 64, 64, 32, 32, 11)
-        self.music_player = MusicPlayer('assets/music.mp3')
+        # self.music_player = MusicPlayer('assets/music.mp3')
         random.seed()
         pyxel.run(self.update, self.draw)
 
@@ -170,21 +170,21 @@ class Player:
     def draw(self):
         pyxel.blt(self.x, self.y, self.img, self.u, self.v, self.w, self.h, self.colkey)
 
-class MusicPlayer:
-    def __init__(self,filename):
-        pygame.mixer.init()
-        pygame.mixer.music.load(filename)
+# class MusicPlayer:
+#     def __init__(self,filename):
+#         pygame.mixer.init()
+#         pygame.mixer.music.load(filename)
 
-    def loop(self,time=0.0):
-        pos = pygame.mixer.music.get_pos()
-        if int(pos) == -1:
-            pygame.mixer.music.play(-1,time)
+#     def loop(self,time=0.0):
+#         pos = pygame.mixer.music.get_pos()
+#         if int(pos) == -1:
+#             pygame.mixer.music.play(-1,time)
 
-    def start(self, count=1):
-        pygame.mixer.music.play(count)
+#     def start(self, count=1):
+#         pygame.mixer.music.play(count)
 
-    def stop(self):
-        pygame.mixer.music.stop()
+#     def stop(self):
+#         pygame.mixer.music.stop()
 
 class Bullet:
     def __init__(self, x, y, direction, level):
