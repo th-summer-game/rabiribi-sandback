@@ -5,8 +5,8 @@ import random
 
 GROUND_BASE = 190
 
-BULLET_WIDTH = 8
-BULLET_HEIGHT = 2
+BULLET_SIZE = 4
+# BULLET_HEIGHT = 2
 BULLET_COLOR = 11
 BULLET_SPEED = 4
 
@@ -164,17 +164,21 @@ class Bullet:
 
     def update(self):
         if self.direction == Direction.LEFT:
-            self.x -= BULLET_SPEED
+            dx = -BULLET_SPEED
         elif self.direction == Direction.RIGHT:
-            self.x += BULLET_SPEED
+            dx = BULLET_SPEED
+
+        self.x += dx
         if self.x < 0 or self.x > 320:
             self.is_alive = False
         if pyxel.frame_count % 2 == 0:
-            Particle(self.x, self.y)
+            Particle(self.x - 3*dx, self.y)
             
             
     def draw(self):
-        pyxel.rect(self.x, self.y, BULLET_WIDTH, BULLET_HEIGHT, BULLET_COLOR)
+        # pyxel.rect(self.x, self.y, BULLET_WIDTH, BULLET_HEIGHT, BULLET_COLOR)
+        pyxel.circ(self.x, self.y, BULLET_SIZE, BULLET_COLOR)
+        pyxel.circ(self.x, self.y, int(BULLET_SIZE/2), 7)
 
 class Particle:
     def __init__(self, x, y):
