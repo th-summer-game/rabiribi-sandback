@@ -1,6 +1,7 @@
 import pyxel
 from enum import Enum
 import pygame
+import random
 
 GROUND_BASE = 190
 
@@ -12,6 +13,7 @@ BULLET_SPEED = 4
 PLAYER_SPEED = 3
 
 bullets = []
+particles = []
 
 class App:
     WIDTH = 320
@@ -23,6 +25,7 @@ class App:
         pyxel.images[1].load(0, 0, "assets/map.png")
         self.player = Player(0, GROUND_BASE, 0, 64, 64, 32, 32, 11, Direction.RIGHT, 0)
         self.music_player = MusicPlayer('assets/music.mp3')
+        random.seed()
         pyxel.run(self.update, self.draw)
 
     def update(self):
@@ -49,6 +52,14 @@ class App:
                 bullet.draw()
             else:
                 bullets.remove(bullet)
+
+        for particle in particles:
+            if particle.is_alive:
+                particle.update()
+                particle.draw()
+            else:
+                particles.remove(particle)
+
 
     def draw_field(self):
         pyxel.rect(0, 0, self.WIDTH, self.HEIGHT-16, 12)
@@ -158,8 +169,40 @@ class Bullet:
             self.x += BULLET_SPEED
         if self.x < 0 or self.x > 320:
             self.is_alive = False
-
+        if pyxel.frame_count % 2 == 0:
+            Particle(self.x, self.y)
+            
+            
     def draw(self):
         pyxel.rect(self.x, self.y, BULLET_WIDTH, BULLET_HEIGHT, BULLET_COLOR)
+
+class Particle:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        self.dx = random.uniform(-1.2, 1.2)
+        self.dy = random.uniform(-1.2, 1.2)
+        self.size = int(random.uniform(1, 3))
+        self.dsize = random.uniform(-0.2, 0.2)
+        self.col = int(random.uniform(1, 16))
+        self.born = pyxel.frame_count
+        self.lifespan = int(random.uniform(5, 12))
+        self.is_alive = True
+        particles.append(self)
+        
+    def update(self):
+        self.x += self.dx
+        self.y += self.dy
+        self.size += self.dsize
+        if self.born + self.lifespan < pyxel.frame_count:
+            self.is_alive = False
+        elif int(self.size) < 0:
+            self.is_alive = False
+        elif int(self.size) > 2:
+            self.size = 2
+            self.dsize = 0
+
+    def draw(self):
+        pyxel.rect(self.x, self.y, self.size, self.size, self.col)
 
 App()
